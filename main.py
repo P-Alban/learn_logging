@@ -10,6 +10,7 @@ old_factory = logging.getLogRecordFactory()
 def create_new_factory(*args, **kwargs):
     record = old_factory(*args, **kwargs)
     record.upper_case = record.getMessage().upper()
+    record.getMessage = lambda: record.upper_case
     return record
 
 
@@ -20,7 +21,6 @@ logging.setLogRecordFactory(create_new_factory)
 class CustomHandler(logging.Handler):
 
     def emit(self, record):  # some stupid logic
-        print(record.upper_case)
         record = super(CustomHandler, self).format(record)
         with open("custom_file.txt", "w") as fp:
             fp.write(record)
@@ -30,7 +30,7 @@ class CustomHandler(logging.Handler):
 class CustomFilter(logging.Filter):
 
     def filter(self, record):
-        return record.getMessage().startswith('Hello')
+        return record.getMessage().startswith('H')
 
 
 file_handler = logging.FileHandler(filename="log.txt", mode="w")
